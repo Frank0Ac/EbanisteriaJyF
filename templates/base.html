@@ -1,0 +1,23 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}EbanisteriaJyF{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>EBANISTERIA JyF</h1>
+        {% include 'menu.html' %}
+    </header>
+
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; 2023 EbanisteriaJyF - Todos los derechos reservados</p>
+    </footer>
+</body>
+</html>

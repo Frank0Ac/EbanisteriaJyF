@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %} Galería - EbanisteriaJyF {% endblock %}
+
+{% block content %}
+    <section>
+        <h2>Galería de Muebles</h2>
+        <ul>
+            {% for mueble in muebles %}
+                <li>
+                    {{ mueble['nombre'] }} - Precio: ${{ mueble['precio'] }}
+                    {% if user %}
+                        <form action="/comprar" method="post">
+                            <input type="hidden" name="mueble_id" value="{{ mueble['id'] }}">
+                            <button type="submit">Añadir a la compra</button>
+                        </form>
+                    {% else %}
+                        <p>Inicia sesión para comprar</p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %} Perfil de {{ user.username }} - EbanisteriaJyF {% endblock %}
+
+{% block content %}
+    <section>
+        <h1>Bienvenido, {{ user.username }}</h1>
+        <p>Correo electrónico: {{ user.email }}</p>
+        <h2>Notas:</h2>
+        <ul>
+            {% for note in user.notes %}
+                <li>{{ note }}</li>
+            {% endfor %}
+        </ul>
+        <form action="/add_note" method="post">
+            <input type="hidden" name="username" value="{{ user.username }}">
+            <input type="text" name="note" placeholder="Agregar nota">
+            <button type="submit">Agregar Nota</button>
+        </form>
+    </section>
+{% endblock %}
