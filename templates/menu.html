@@ -1,4 +1,5 @@
-<!-- templates/menu.html -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/menuStyle.css') }}">
+
 <nav>
     <ul>
         <li><a href="{{ url_for('inicio') }}"> Inicio </a></li>
@@ -6,6 +7,6 @@
         <li><a href="{{ url_for('blog') }}"> Blog </a></li>
         <li><a href="{{ url_for('contacto') }}"> Contacto </a></li>
         <li><a href="{{ url_for('login') }}"> Iniciar Sesión </a></li>
-        <!-- Agrega otras rutas y elementos del menú según sea necesario -->
+        <li><a href="{{ url_for('about') }}"> Acerca de </a></li>
     </ul>
 </nav>

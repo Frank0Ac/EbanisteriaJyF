@@ -3,8 +3,10 @@
 {% block title %} Perfil de {{ user.username }} - EbanisteriaJyF {% endblock %}
 
 {% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profileStyle.css') }}">
+
     <section>
-        <h1>Bienvenido, {{ user.username }}</h1>
+        <h1>Bienvenido {{ user.username }}</h1>
         <p>Correo electrónico: {{ user.email }}</p>
         <h2>Notas:</h2>
         <ul>

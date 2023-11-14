@@ -3,9 +3,17 @@
 {% block title %} Inicio - EbanisteriaJyF {% endblock %}
 
 {% block content %}
-    <section>
-        <h2>Bienvenido a EbanisteriaJyF</h2>
-        <p>Esta es la página de inicio de nuestra tienda de ebanistería. Aquí podrás encontrar muebles hechos a mano con la más alta calidad y atención al detalle.</p>
-        <!-- Puedes agregar más contenido aquí -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/homeStyle.css') }}">
+
+    <section class="sectionHome">
+        <h2 class="h2Home">Bienvenido a EbanisteriaJyF</h2>
+        <p class="pHome">Somos una empresa dedicada a la fabricación de muebles hechos a mano con la más alta calidad y atención al detalle. Nuestra ebanistería se enorgullece de:</p>
+        <ul class="ulHome">
+            <li class="liHome">Utilizar maderas de la mejor calidad para garantizar muebles duraderos.</li>
+            <li class="liHome">Ofrecer diseños personalizados para satisfacer las necesidades de nuestros clientes.</li>
+            <li class="liHome">Enfocarnos en la artesanía y la atención al detalle en cada pieza.</li>
+            <!-- Agrega más valores o información relevante -->
+        </ul>
+        <p class="pHome">Explora nuestra galería para ver nuestros diseños exclusivos.</p>
     </section>
 {% endblock %}

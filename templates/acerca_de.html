@@ -1,14 +1,14 @@
-<!-- templates/acerca_de.html -->
 {% extends 'base.html' %}
 
 {% block title %}Acerca de Nosotros - EbanisteriaJyF{% endblock %}
 
 {% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/acercadeStyle.css') }}">
+
     <section>
         <h2>Acerca de Nosotros</h2>
-        <p>EbanisteriaJyF es una empresa dedicada a la fabricación, y restauracion de muebles, closets, cocinas integrales, 
+        <p class="pAcercade">EbanisteriaJyF es una empresa dedicada a la fabricación, y restauracion de muebles, closets, cocinas integrales, 
             puertas, camas y demas obras en madera hechos a mano con la más alta calidad y atención al detalle. <br>
             Fundada por Francisco Andres Hernandez Zarama junto a Juan Sebastian Rivera Chacua.</p>
-        <!-- Agrega más información sobre la empresa aquí -->
     </section>
 {% endblock %}

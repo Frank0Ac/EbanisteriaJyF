@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %} Contacto - EbanisteriaJyF {% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/contactoStyle.css') }}">
+
+    <section class="container mt-3">
+        <h2 class="mb-4">Contacto</h2>
+
+        <div class="izq">
+            <div class="mb-3">
+                <h5>Nombre: {{ datos_contacto.nombre }}</h5>
+            </div>
+    
+            <div class="mb-3">
+                <h5>Correo Electrónico: {{ datos_contacto.correo }}</h5>
+            </div>
+    
+            <div class="mb-3">
+                <h5>Teléfono: {{ datos_contacto.telefono }}</h5>
+            </div>
+    
+            <div class="mb-3">
+                <h5>Dirección: {{ datos_contacto.direccion }}</h5>
+            </div>
+        </div>
+        
+        <div class="der">
+            <div class="mb-3">
+                <h5>Nombre: {{ datos_contacto.nombre2 }}</h5>
+            </div>
+    
+            <div class="mb-3">
+                <h5>Correo Electrónico: {{ datos_contacto.correo2 }}</h5>
+            </div>
+    
+            <div class="mb-3">
+                <h5>Teléfono: {{ datos_contacto.telefono2 }}</h5>
+            </div>
+    
+            <div class="mb-3">
+                <h5>Dirección: {{ datos_contacto.direccion2 }}</h5>
+            </div>
+        </div>
+    </section>
+{% endblock %}

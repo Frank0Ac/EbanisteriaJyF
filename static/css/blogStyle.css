@@ -1,0 +1,38 @@
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    background-color: rgba(196, 190, 190, 0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+h2 {
+    color: #343a40;
+    text-align: center;
+}
+
+.card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+img {
+    display: flex;
+    align-items: center;
+    margin: auto;
+}
+
+.card img {
+    width: 100%;
+    height: auto;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+h5 {
+    color: #007bff;
+}

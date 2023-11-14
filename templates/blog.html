@@ -1,12 +1,20 @@
-<!-- templates/acerca_de.html -->
 {% extends 'base.html' %}
 
-{% block title %}Blog - EbanisteriaJyF{% endblock %}
+{% block title %} Blog - EbanisteriaJyF {% endblock %}
 
 {% block content %}
-    <section>
-        <h2>Blog</h2>
-        <p> Hola Blog Frk</p>
-        <!-- Agrega más información sobre la empresa aquí -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/blogStyle.css') }}">
+
+    <section class="container mt-3">
+        <h2 class="mb-4">Blog EbanisteriaJyF</h2>
+        <div>
+            <img src="{{ url_for('static', filename='imagenes/trabajo_madera.jpg') }}" alt="Trabajos en Madera" width="200" height="300">
+            <div class="card-body">
+                <h5> Closet </h5>
+                <p>
+                    Estamos realizando un closet, donde se muestra la parte del armado y su proximo paso a pintar.
+                </p>
+            </div>
+        </div>
     </section>
 {% endblock %}

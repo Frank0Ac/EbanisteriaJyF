@@ -3,22 +3,39 @@
 {% block title %} Galería - EbanisteriaJyF {% endblock %}
 
 {% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/galeriaStyle.css') }}">
+
     <section>
         <h2>Galería de Muebles</h2>
-        <ul>
-            {% for mueble in muebles %}
-                <li>
-                    {{ mueble['nombre'] }} - Precio: ${{ mueble['precio'] }}
-                    {% if user %}
-                        <form action="/comprar" method="post">
-                            <input type="hidden" name="mueble_id" value="{{ mueble['id'] }}">
-                            <button type="submit">Añadir a la compra</button>
-                        </form>
-                    {% else %}
-                        <p>Inicia sesión para comprar</p>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
+
+        <div id="mueblesCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for group in muebles|batch(4) %}
+                    <div class="carousel-item {% if loop.first %}active{% endif %}">
+                        <div class="row">
+                            {% for mueble in group %}
+                                <div class="col-md-3 mb-4">
+                                    <div class="card">
+                                        <img src="{{ url_for('static', filename='imagenes/' + mueble['imagen']) }}" class="card-img-top" alt="{{ mueble['nombre'] }}" width="120" height="250">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ mueble['nombre'] }}</h5>
+                                            <a href="#" class="btn btn-primary">Ver detalles</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#mueblesCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#mueblesCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
+        </div>
     </section>
 {% endblock %}
