@@ -6,7 +6,14 @@
         <li><a href="{{ url_for('galeria') }}"> Galería </a></li>
         <li><a href="{{ url_for('blog') }}"> Blog </a></li>
         <li><a href="{{ url_for('contacto') }}"> Contacto </a></li>
-        <li><a href="{{ url_for('login') }}"> Iniciar Sesión </a></li>
         <li><a href="{{ url_for('about') }}"> Acerca de </a></li>
+
+        <!-- Mostrar el nombre del usuario si está autenticado -->
+        {% if current_user.is_authenticated %}
+            <li>Bienvenido, {{ current_user.username }}!</li>
+            <li><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
+        {% else %}
+            <li><a href="{{ url_for('login') }}"> Iniciar Sesión </a></li>
+        {% endif %}        
     </ul>
 </nav>
