@@ -1,15 +1,26 @@
-from flask import Flask
-from flask import send_from_directory
 import os
-from flask import request
-from flask import make_response
-from flask import abort
-from flask import redirect
-from flask import url_for
-from flask import render_template
-from model import User
+from flask import Flask, send_from_directory, request, make_response, abort, redirect, url_for, render_template
+from model import db, User
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = '564810'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///datosDB.db'
+db.init_app(app) 
+
+# Configuración para el manejo de sesiones de usuario
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+@app.context_processor
+def inject_user():
+    return {'current_user': current_user}
 
 @app.route('/favicon.ico')
 def favicon():
@@ -34,7 +45,6 @@ def pagina_no_autorizado(error):
 
 @app.errorhandler(404)
 def page_not_found(error):
-    # return "Página no encontrada personalizada...", 404
     return '<img src="' + url_for('static', filename='imagenes/error404.png') + '"/>', 404
 
 @app.route('/galeria')
@@ -80,6 +90,7 @@ def login():
 
         user = User.get(username)
         if user and user.check_password(password):
+            login_user(user)  # Asegúrate de llamar a login_user aquí
             return redirect(url_for('profile', username=username))
         else:
             return 'Credenciales inválidas. Por favor, inténtalo de nuevo.'
@@ -103,12 +114,19 @@ def register():
     return render_template('register.html')
 
 @app.route('/profile/<username>')
+@login_required
 def profile(username):
     user = User.get(username)
     if user:
         return render_template('profile.html', user=user)
     else:
         return 'Usuario no encontrado'
+    
+@app.route('/logout')
+@login_required  # Esta decoración asegura que solo los usuarios autenticados puedan cerrar sesión
+def logout():
+    logout_user()
+    return redirect(url_for('inicio'))
 
 @app.route('/acercade')
 def acerca_de():
@@ -119,4 +137,6 @@ def about():
     return redirect("/acercade")
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(port=9090, debug = True)
