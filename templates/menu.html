@@ -10,7 +10,11 @@
 
         <!-- Mostrar el nombre del usuario si está autenticado -->
         {% if current_user.is_authenticated %}
-            <li>Bienvenido, {{ current_user.username }}!</li>
+            {% if current_user.is_superuser %}
+                <li>Bienvenido, admin {{ current_user.username }}!</li>
+            {% else %}
+                <li>Bienvenido, {{ current_user.username }}!</li>
+            {% endif %}
             <li><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
         {% else %}
             <li><a href="{{ url_for('login') }}"> Iniciar Sesión </a></li>

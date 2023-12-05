@@ -1,18 +1,30 @@
 import os
-from flask import Flask, send_from_directory, request, make_response, abort, redirect, url_for, render_template
+from flask import Flask, send_from_directory, request, make_response, abort, redirect, url_for, render_template, flash
 from model import db, User
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_migrate import Migrate
+from flask_uploads import UploadSet, configure_uploads, IMAGES, UploadNotAllowed
+from model import Image
+from flask_wtf.csrf import CSRFError, validate_csrf, generate_csrf
+from forms import MiFormulario
+from werkzeug.utils import secure_filename
+
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '564810'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///datosDB.db'
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['SECRET_KEY'] = '564810'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app) 
+migrate = Migrate(app, db)
 
-# Configuración para el manejo de sesiones de usuario
+# manejo de sesiones de usuario
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -47,19 +59,17 @@ def pagina_no_autorizado(error):
 def page_not_found(error):
     return '<img src="' + url_for('static', filename='imagenes/error404.png') + '"/>', 404
 
-@app.route('/galeria')
+@app.route('/galeria', methods=['GET', 'POST'])
 def galeria():
-    muebles = [
-        {'nombre': 'Mueble', 'imagen': 'mueble.jpg'},
-        {'nombre': 'Silla', 'imagen': 'silla.jpg'},
-        {'nombre': 'Mesa', 'imagen': 'mesa.jpg'},
-        {'nombre': 'Cocina', 'imagen': 'cocina.jpg'},
-        {'nombre': 'Armario', 'imagen': 'armario.jpg'},
-        {'nombre': 'Gradas', 'imagen': 'gradas.jpg'},
-        {'nombre': 'Pasamanos', 'imagen': 'pasamanos.jpg'},
-        {'nombre': 'Ventanas', 'imagen': 'ventanas.jpg'},
-    ]
-    return render_template('galeria.html', muebles=muebles)
+    form = MiFormulario()
+
+    if form.validate_on_submit():
+        print("Formulario enviado correctamente")
+        print(f"Imagen del usuario actual: {current_user.images}")
+
+    all_images = Image.query.all()
+
+    return render_template('galeria.html', form=form, user_images=all_images)
 
 @app.route('/blog')
 def blog():
@@ -96,6 +106,39 @@ def login():
             return 'Credenciales inválidas. Por favor, inténtalo de nuevo.'
 
     return render_template('login.html')
+
+# Cargar configuración para imágenes
+uploaded_images = UploadSet('images', IMAGES)
+app.config['UPLOADED_IMAGES_DEST'] = 'static/uploads'
+app.config['UPLOADED_IMAGES_ALLOW'] = set(['jpg', 'jpeg', 'png', 'gif'])
+configure_uploads(app, uploaded_images)
+
+@app.route('/upload', methods=['POST'])
+@login_required
+def upload():
+    
+    if not current_user.is_superuser:
+        flash('Solo el superusuario puede cargar imágenes.', 'danger')
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        if 'imagen' not in request.files:
+            return redirect(request.url)
+        
+        imagen = request.files['imagen']
+        
+        if imagen.filename == '':
+            return redirect(request.url)
+            
+        if imagen:
+            filename = secure_filename(imagen.filename)    
+            imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            
+            new_image = Image(filename=filename, author=current_user)
+            db.session.add(new_image)
+            db.session.commit()
+
+            return redirect(url_for('galeria'))
+    return render_template('galeria.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

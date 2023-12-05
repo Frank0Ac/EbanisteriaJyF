@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %} Panel de Administración - EbanisteriaJyF {% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/adminStyle.css') }}">
+
+    <section>
+        <h1>{{ welcome_message }}</h1>
+    </section>
+{% endblock %}
