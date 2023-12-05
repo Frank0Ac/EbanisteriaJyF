@@ -3,19 +3,48 @@
 {% block title %} Productos - EbanisteriaJyF {% endblock %}
 
 {% block content %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/productostyle.css') }}">
-    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/productosStyle.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename ='./assets/css/custom_paginate.css') }}" />
+
     <section>
-        <h1>Lista de Productos</h1>
+        <div class="container mt-2">
+            <div class="row justify-content-md-center">
+                <h1 class="text-center mb-4">Listado de Materiales de Ebanistería</h1>
+            </div>
 
-        <ul>
-            {% for product in products %}
-                <li>{{ product.name }} - Precio: ${{ product.price }}</li>
-            {% endfor %}
-        </ul>
+            <div class="row justify-content-md-center">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Nombre del Material</th>
+                                <th>Detalle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for material in materiales %}
+                            <tr>
+                                <td>{{ material.id }}</td>
+                                <td>{{ material.material_nombre }}</td>
+                                <td>{{ material.detalle }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-        <!-- Paginación -->
-        {{ pagination.info }}
-        {{ pagination.links }}
+            <div class="row justify-content-md-center">
+                <div class="col-md-auto">
+                    <span>
+                      {{ pagination.info }}
+                      <hr />
+                    </span>
+                    {{ pagination.links }}
+                  </div>
+            </div>
+        </div>
     </section>
 {% endblock %}

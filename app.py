@@ -11,6 +11,7 @@ from forms import MiFormulario
 from werkzeug.utils import secure_filename
 import logging
 from flask_paginate import Pagination, get_page_parameter
+from conexionBD import connectionBD
 
 app = Flask(__name__)
 
@@ -21,8 +22,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app) 
 migrate = Migrate(app, db)
 
-
-
 # manejo de sesiones de usuario
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -31,14 +30,6 @@ login_manager.login_view = 'login'
 handler = logging.StreamHandler()
 handler.setLevel(logging.INFO)
 app.logger.addHandler(handler)
-
-# Configuración de paginación
-PER_PAGE = 10  # Número de productos por página
-# Definición del modelo Product
-class Product(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    price = db.Column(db.Float, nullable=False)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -82,31 +73,53 @@ def internal_server_error(error):
     app.logger.error('Error interno del servidor')
     return render_template('error.html', error_code=500), 500
 
-@app.route('/galeria', methods=['GET', 'POST'])
+@app.route('/galeria')
 def galeria():
-    form = MiFormulario()
-
-    if form.validate_on_submit():
-        print("Formulario enviado correctamente")
-        print(f"Imagen del usuario actual: {current_user.images}")
-
-    # Filtrar solo las imágenes públicas
-    all_images = Image.query.filter_by(is_public=True).all()
-
-    return render_template('galeria.html', form=form, user_images=all_images)
+    muebles = [
+        {'nombre': 'Mueble', 'imagen': 'mueble.jpg'},
+        {'nombre': 'Silla', 'imagen': 'silla.jpg'},
+        {'nombre': 'Mesa', 'imagen': 'mesa.jpg'},
+        {'nombre': 'Cocina', 'imagen': 'cocina.jpg'},
+        {'nombre': 'Armario', 'imagen': 'armario.jpg'},
+        {'nombre': 'Gradas', 'imagen': 'gradas.jpg'},
+        {'nombre': 'Pasamanos', 'imagen': 'pasamanos.jpg'},
+        {'nombre': 'Ventanas', 'imagen': 'ventanas.jpg'},
+    ]
+    return render_template('galeria.html', muebles=muebles)
 
 @app.route('/productos')
 def productos():
-    # Obtener la página actual de la URL
-    page = request.args.get(get_page_parameter(), type=int, default=1)
+    conexion_MySQLdb = connectionBD()
+    cursor = conexion_MySQLdb.cursor(dictionary=True)
 
-    # Consulta para obtener todos los productos desde la base de datos
-    all_products = Product.query.paginate(page=page, per_page=PER_PAGE)
+    # Contar el número total de registros
+    cursor.execute("SELECT COUNT(*) AS total FROM materiales_ebanisteria")
+    count = cursor.fetchone()['total']
 
-    # Configurar la paginación
-    pagination = Pagination(page=page, total=all_products.total, per_page=PER_PAGE, css_framework='bootstrap4')
+    # Obtener el número de página actual y la cantidad de resultados por página
+    page_num = request.args.get('page', 1, type=int)
+    per_page = 4
 
-    return render_template('productos.html', products=all_products.items, pagination=pagination)
+    # Calcular el índice del primer registro y limitar la consulta a un rango de registros
+    start_index = (page_num - 1) * per_page
+
+    querySQL = (f"SELECT id, material_nombre, detalle "
+                f"FROM materiales_ebanisteria "
+                f"ORDER BY id LIMIT {per_page} OFFSET {start_index}")
+    cursor.execute(querySQL)
+    materiales = cursor.fetchall()
+
+    # Calcular el índice del último registro
+    end_index = min(start_index + per_page, count)
+    if end_index > count:
+        end_index = count
+
+    # Crear objeto paginable
+    pagination = Pagination(page=page_num, total=count, per_page=per_page,
+                            display_msg=f"Mostrando registros {start_index + 1} - {end_index} de un total de <strong>({count})</strong>")
+    conexion_MySQLdb.commit()
+
+    return render_template('productos.html', materiales=materiales, pagination=pagination)    
 
 @app.route('/blog')
 def blog():

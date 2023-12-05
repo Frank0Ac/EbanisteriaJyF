@@ -6,56 +6,36 @@
     
     
     <section>
-        <!-- Mostrar el formulario solo si el usuario es un superusuario -->
-        {% if current_user.is_superuser %}
-            <form method="post" enctype="multipart/form-data">
-                {{ form.csrf_token }}
-                
-                {{ form.campo_nombre.label }}
-                {{ form.campo_nombre }}
-                {% if form.campo_nombre.errors %}
-                    <ul class="errors">
-                        {% for error in form.campo_nombre.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-
-                {{ form.imagen.label }}
-                {{ form.imagen }}
-                {% if form.imagen.errors %}
-                    <ul class="errors">
-                        {% for error in form.imagen.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-                
-                {{ form.boton_enviar }}
-            </form>
-        {% endif %}
-
-
         <h2>Galería de Muebles</h2>
 
-        <!-- Muestra las imágenes de los muebles -->
         <div id="mueblesCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
-                {% for image in user_images %}
+                {% for group in muebles|batch(4) %}
                     <div class="carousel-item {% if loop.first %}active{% endif %}">
-                        <img src="{{ url_for('static', filename='uploads/' + image.filename) }}"  alt="">
+                        <div class="row">
+                            {% for mueble in group %}
+                                <div class="col-md-3 mb-4">
+                                    <div class="card">
+                                        <img src="{{ url_for('static', filename='imagenes/' + mueble['imagen']) }}" class="card-img-top" alt="{{ mueble['nombre'] }}" width="120" height="250">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ mueble['nombre'] }}</h5>
+                                            <a href="#" class="btn btn-primary">Ver detalles</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 {% endfor %}
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#mueblesCarousel" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
+                <span class="visually-hidden">Anterior</span>
             </button>
             <button class="carousel-control-next" type="button" data-bs-target="#mueblesCarousel" data-bs-slide="next">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
+                <span class="visually-hidden">Siguiente</span>
             </button>
         </div>
-
     </section>
 {% endblock %}
