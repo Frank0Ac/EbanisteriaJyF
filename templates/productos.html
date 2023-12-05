@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %} Productos - EbanisteriaJyF {% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/productostyle.css') }}">
+    
+    <section>
+        <h1>Lista de Productos</h1>
+
+        <ul>
+            {% for product in products %}
+                <li>{{ product.name }} - Precio: ${{ product.price }}</li>
+            {% endfor %}
+        </ul>
+
+        <!-- Paginación -->
+        {{ pagination.info }}
+        {{ pagination.links }}
+    </section>
+{% endblock %}

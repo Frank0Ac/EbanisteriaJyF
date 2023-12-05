@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %} Blog - EbanisteriaJyF {% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/errorStyle.css') }}">
+
+    <section>
+        <div class="error-container">
+            <h1>Error {{ error_code }}</h1>
+            {% if error_code == 404 %}
+                <p>La página que estás buscando no existe.</p>
+            {% elif error_code == 500 %}
+                <p>Hubo un error interno en el servidor. ¡Lo sentimos!</p>
+            {% else %}
+                <p>Ocurrió un error inesperado.</p>
+            {% endif %}
+            <p><a href="{{ url_for('inicio') }}">Volver a la página de inicio</a></p>
+        </div>
+    </section>
+{% endblock %}

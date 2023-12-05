@@ -9,7 +9,8 @@ from model import Image
 from flask_wtf.csrf import CSRFError, validate_csrf, generate_csrf
 from forms import MiFormulario
 from werkzeug.utils import secure_filename
-
+import logging
+from flask_paginate import Pagination, get_page_parameter
 
 app = Flask(__name__)
 
@@ -20,11 +21,24 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app) 
 migrate = Migrate(app, db)
 
+
+
 # manejo de sesiones de usuario
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+# Configurar el sistema de registros
+handler = logging.StreamHandler()
+handler.setLevel(logging.INFO)
+app.logger.addHandler(handler)
 
+# Configuración de paginación
+PER_PAGE = 10  # Número de productos por página
+# Definición del modelo Product
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Float, nullable=False)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -59,6 +73,15 @@ def pagina_no_autorizado(error):
 def page_not_found(error):
     return '<img src="' + url_for('static', filename='imagenes/error404.png') + '"/>', 404
 
+@app.route("/error-servidor")
+def errorservidor():
+    abort(500)
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    app.logger.error('Error interno del servidor')
+    return render_template('error.html', error_code=500), 500
+
 @app.route('/galeria', methods=['GET', 'POST'])
 def galeria():
     form = MiFormulario()
@@ -67,9 +90,23 @@ def galeria():
         print("Formulario enviado correctamente")
         print(f"Imagen del usuario actual: {current_user.images}")
 
-    all_images = Image.query.all()
+    # Filtrar solo las imágenes públicas
+    all_images = Image.query.filter_by(is_public=True).all()
 
     return render_template('galeria.html', form=form, user_images=all_images)
+
+@app.route('/productos')
+def productos():
+    # Obtener la página actual de la URL
+    page = request.args.get(get_page_parameter(), type=int, default=1)
+
+    # Consulta para obtener todos los productos desde la base de datos
+    all_products = Product.query.paginate(page=page, per_page=PER_PAGE)
+
+    # Configurar la paginación
+    pagination = Pagination(page=page, total=all_products.total, per_page=PER_PAGE, css_framework='bootstrap4')
+
+    return render_template('productos.html', products=all_products.items, pagination=pagination)
 
 @app.route('/blog')
 def blog():
@@ -116,10 +153,10 @@ configure_uploads(app, uploaded_images)
 @app.route('/upload', methods=['POST'])
 @login_required
 def upload():
-    
     if not current_user.is_superuser:
         flash('Solo el superusuario puede cargar imágenes.', 'danger')
         return redirect(url_for('index'))
+
     if request.method == 'POST':
         if 'imagen' not in request.files:
             return redirect(request.url)
@@ -133,7 +170,7 @@ def upload():
             filename = secure_filename(imagen.filename)    
             imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             
-            new_image = Image(filename=filename, author=current_user)
+            new_image = Image(filename=filename, author=current_user, is_public=True)
             db.session.add(new_image)
             db.session.commit()
 
@@ -178,6 +215,10 @@ def acerca_de():
 @app.route("/about")
 def about():
     return redirect("/acercade")
+
+file_handler = logging.FileHandler('app.log')
+file_handler.setLevel(logging.ERROR)
+app.logger.addHandler(file_handler)
 
 if __name__ == '__main__':
     with app.app_context():
